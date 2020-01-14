@@ -91,8 +91,6 @@ class UndergroundBelt < Belt
     end
 
     def setup(map)
-        # TODO: check that a direction of 0 is down, and not up.
-        #       if it is up, then this could work as-is.
         if data.type == "input"
             output = nil
             x, y = *@position
