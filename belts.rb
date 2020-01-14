@@ -96,7 +96,6 @@ class UndergroundBelt < Belt
         if data.type == "input"
             output = nil
             x, y = *@position
-            p [x, y]
             ox, oy = *Direction.to_offset(@direction)
             x += ox
             y += oy
@@ -105,11 +104,9 @@ class UndergroundBelt < Belt
                     next if e == self
                     next unless e.is_a?(UndergroundBelt)
                     next unless e.data.type == "output"
-                    p e
                     e_x, e_y = *e.position
                     e_x == x && e_y == y
                 end
-                p entity
                 if entity
                     output = entity
                     break
@@ -118,7 +115,7 @@ class UndergroundBelt < Belt
                 y += oy
             end
             if output
-                # @outputs.push( [x, y] )
+                @outputs.push( [*output.position] )
             end
         end
     end
