@@ -19,6 +19,8 @@ require "base64"
 require "ostruct"
 
 require_relative "entity"
+
+# Load all entity info
 require_relative "belts"
 
 class Factory
