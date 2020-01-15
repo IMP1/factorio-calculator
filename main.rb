@@ -68,8 +68,15 @@ class Factory
         end
     end
 
+    def set_input(x, y, throughput)
+        input = SystemInput.new(x, y, throughput)
+        entity = @entities.find { |e| e.position[0] == x && e.position[1] == y }
+        entity.refresh
+    end
+
     def throughput_at(x, y)
-        # TODO: do
+        entity = @entities.find { |e| e.position[0] == x && e.position[1] == y }
+        return entity.throughput
     end
 
     def self.from_blueprint_string(blueprint_string)
@@ -99,3 +106,8 @@ obj = Blueprint.decode(BALANCER_BLUEPRINT_STRING)
 blueprint_object = obj.blueprint_book.blueprints[16]
 
 f = Factory.new(blueprint_object)
+f.set_input(1, 4, { "iron-plate" => 10 })
+f.set_input(0, 4, { "iron-plate" => 10 })
+f.set_input(-1, 4, { "iron-plate" => 10 })
+f.set_input(-2, 4, { "iron-plate" => 10 })
+p f.throughput_at(0, -2)
