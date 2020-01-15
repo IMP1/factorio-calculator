@@ -14,7 +14,7 @@ class TransportBelt < Belt
     def initialize(position, direction, data)
         super(NAME, position, direction, data)
         @max_throughput = 15
-        @lanes = [] # 0 = left, 1 = right
+        @lanes = Array.new(2) { [] } # 0 = left, 1 = right
         ox, oy = *Direction.to_offset(@direction)
         x, y = *@position
         @outputs.push( [x + ox, y + oy] )
@@ -22,18 +22,52 @@ class TransportBelt < Belt
     end
 
     def refresh
-        puts "#{@upstream_entities.size} -> #{name}"
+        return if @upstream_entities.empty?
+
         if @upstream_entities.count { |i| i.is_a?(Belt) } > 1
-            # TODO: add manually to lanes from inputs.
-            same_direction = @upstream_entities.find { |i| i.is_a?(Belt) and i.direction == @direction }
-            unless same_direction.nil?
-                # @lanes[0] += same_direction.lanes[0]
-                # @lanes[1] += same_direction.lanes[1]
+            same_direction_belt = @upstream_entities.find { |i| i.is_a?(Belt) and i.direction == @direction }
+            unless same_direction_belt.nil?
+                @lanes[0].push( -> { belt.throughput.map { |item, amount| [item, amount / 2] }.to_h } )
+                @lanes[1].push( -> { belt.throughput.map { |item, amount| [item, amount / 2] }.to_h } )
             end
-            # TODO: add to just one lane
-        elsif @upstream_entities.count { |i| i.is_a?(Belt) } > 0
-            
+            other_directions = @upstream_entities - [same_direction_belt]
+            other_directions.each do |e|
+                # TODO: Find the correct lane and add to it
+                lane_index = 0
+                @lanes[lane_index].push( -> { e.throughput } )
+            end
+        elsif @upstream_entities.count { |i| i.is_a?(Belt) } == 1
+            belt = @upstream_entities.find { |i| i.is_a?(Belt) }
+            @lanes[0].push( -> { belt.throughput.map { |item, amount| [item, amount / 2] }.to_h } )
+            @lanes[1].push( -> { belt.throughput.map { |item, amount| [item, amount / 2] }.to_h } )
         end
+
+        @upstream_entities.select { |e| e.is_a?(Inserter) }.each do |e|
+            # TODO: Find the correct lane and add to it
+            lane_index = 0
+            @lanes[lane_index].push( -> { e.throughput } )
+        end
+
+        @upstream_entities.select { |e| e.is_a?(SystemInput) }.each do |e|
+            p e
+            # TODO: Find the correct lane and add to it
+            @lanes[0].push( -> { e.throughput.map { |item, amount| [item, amount / 2] }.to_h } )
+            @lanes[1].push( -> { e.throughput.map { |item, amount| [item, amount / 2] }.to_h } )
+        end
+    end
+
+    def throughput
+        output = {}
+        @lanes.each do |lane|
+            lane.each do |input|
+                input_throughput = input.call
+                input_throughput.each do |item, amount|
+                    output[item] ||= 0
+                    output[item] += amount
+                end
+            end
+        end
+        return output
     end
 
 end
