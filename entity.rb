@@ -39,6 +39,11 @@ class Entity
     def refresh
     end
 
+    # To be overridden by child classes
+    def throughput
+        return {}
+    end
+
     def add_input(entity, suppress_refresh=false)
         @upstream_entities.push(entity)
         refresh unless suppress_refresh
@@ -62,4 +67,18 @@ class Entity
 end
 
 class Inserter < Entity
+end
+
+class SystemInput < Entity
+
+    def initialize(x, y, constant_throughput)
+        super("input", [0, 0], 0, nil)
+        @outputs.push([x, y])
+        @throughput = constant_throughput
+    end
+
+    def throughput
+        return @throughput
+    end
+
 end
