@@ -71,7 +71,7 @@ class Factory
     def set_input(x, y, throughput)
         input = SystemInput.new(x, y, throughput)
         entity = @entities.find { |e| e.position[0] == x && e.position[1] == y }
-        entity.refresh
+        entity.add_input(input)
     end
 
     def throughput_at(x, y)
@@ -110,4 +110,5 @@ f.set_input(1, 4, { "iron-plate" => 10 })
 f.set_input(0, 4, { "iron-plate" => 10 })
 f.set_input(-1, 4, { "iron-plate" => 10 })
 f.set_input(-2, 4, { "iron-plate" => 10 })
+p f.throughput_at(1, 4)
 p f.throughput_at(0, -2)
