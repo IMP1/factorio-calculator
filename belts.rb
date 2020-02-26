@@ -23,6 +23,7 @@ class TransportBelt < Belt
 
     def refresh
         return if @upstream_entities.empty?
+        puts "#{@upstream_entities.map { |e| e.name }} -> #{name}"
 
         if @upstream_entities.count { |i| i.is_a?(Belt) } > 1
             same_direction_belt = @upstream_entities.find { |i| i.is_a?(Belt) and i.direction == @direction }
@@ -100,7 +101,7 @@ class Splitter < Belt
     end
 
     def refresh
-        puts "#{@upstream_entities.size} -> #{name}"
+        puts "#{@upstream_entities.map { |e| e.name }} -> #{name}"
     end
 
 end
@@ -153,7 +154,7 @@ class UndergroundBelt < Belt
     end
 
     def refresh
-        puts "#{@upstream_entities.size} -> #{name}"
+        puts "#{@upstream_entities.map { |e| e.name }} -> #{name}"
     end
 
 end

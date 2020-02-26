@@ -51,9 +51,6 @@ class Factory
     def generate_tree
         longest_name_length = @entities.max_by { |e| e.name.size }.name.size
         @entities.each do |entity|
-            puts "  * #{entity.name.ljust(longest_name_length)} : #{entity.direction} : #{entity.position} => #{entity.outputs}"
-        end
-        @entities.each do |entity|
             inputs = @entities.select do |e|
                 e.outputs.product(entity.inputs).any? do |in_pos, out_pos|
                     in_x, in_y = *in_pos
@@ -111,4 +108,5 @@ f.set_input(0, 4, { "iron-plate" => 10 })
 f.set_input(-1, 4, { "iron-plate" => 10 })
 f.set_input(-2, 4, { "iron-plate" => 10 })
 p f.throughput_at(1, 4)
+p f.throughput_at(-2, 4)
 p f.throughput_at(0, -2)
